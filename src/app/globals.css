@@ -1,0 +1,179 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design direction: FIFA World Cup 2026 — Panini sticker album aesthetic.
+ * Crisp white surfaces, jet-black geometric type, official palette,
+ * decorative tile bands as the signature visual element.
+ */
+
+@theme inline {
+  /* Shadcn primitive aliases */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Domain tokens */
+  --color-pitch: var(--pitch);
+  --color-pitch-deep: var(--pitch-deep);
+  --color-floodlight: var(--floodlight);
+  --color-paper: var(--paper);
+  --color-paper-hover: var(--paper-hover);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-chalk: var(--chalk);
+  --color-card-yellow: var(--card-yellow);
+  --color-card-red: var(--card-red);
+  --color-gold: var(--gold);
+  --color-blue: var(--blue);
+  --color-rule: var(--rule);
+
+  /* Typography */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-oswald);
+
+  /* Radius — sharper than shadcn defaults, but the tile band uses larger curves */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: var(--radius);
+  --radius-xl: 0.75rem;
+}
+
+:root {
+  /*
+   * Panini palette — light mode.
+   * Hex matches the official 2026 brand colors literally:
+   *   Gold #F6BB1E, Black #000000, White #FFFFFF,
+   *   Torch Red #E61D25, Hermes Blue #2A398D, Average Green #3CAC3B.
+   */
+  --floodlight: #ffffff;
+  --paper: #ffffff;
+  --paper-hover: #f4f4f4;
+  --ink: #000000;
+  --ink-muted: #555555;
+  --ink-faint: #9a9a9a;
+  --pitch: #3cac3b;
+  --pitch-deep: #2f8a2e;
+  --chalk: #ffffff;
+  --card-yellow: #f6bb1e; /* official gold reused for warnings/pending */
+  --card-red: #e61d25;
+  --gold: #f6bb1e;
+  --blue: #2a398d;
+  --rule: rgb(0 0 0 / 0.12);
+
+  /* Shadcn semantic mappings */
+  --background: var(--floodlight);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--chalk);
+  --secondary: var(--paper-hover);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-hover);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--paper-hover);
+  --accent-foreground: var(--ink);
+  --destructive: var(--card-red);
+  --border: var(--rule);
+  --input: var(--paper-hover);
+  --ring: var(--ink);
+
+  --radius: 0.4rem;
+}
+
+.dark {
+  /* Dark mode — inverted, retains official accent colors */
+  --floodlight: #0a0a0a;
+  --paper: #141414;
+  --paper-hover: #1c1c1c;
+  --ink: #ffffff;
+  --ink-muted: #b8b8b8;
+  --ink-faint: #707070;
+  --pitch: #4ec84d;
+  --pitch-deep: #3cac3b;
+  --chalk: #ffffff;
+  --card-yellow: #f6bb1e;
+  --card-red: #ff3b43;
+  --gold: #ffc832;
+  --blue: #4a5cd0;
+  --rule: rgb(255 255 255 / 0.14);
+
+  --background: var(--floodlight);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--chalk);
+  --primary-foreground: var(--ink);
+  --secondary: var(--paper-hover);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-hover);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--paper-hover);
+  --accent-foreground: var(--ink);
+  --destructive: var(--card-red);
+  --border: var(--rule);
+  --input: var(--paper-hover);
+  --ring: var(--chalk);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  .nums,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+/* Plays once when a knockout match resolves to a winner. */
+@keyframes winnerFlash {
+  0%   { background-color: rgb(60 172 59 / 0);   transform: scale(1); }
+  25%  { background-color: rgb(60 172 59 / 0.18); transform: scale(1.025); }
+  100% { background-color: rgb(60 172 59 / 0);   transform: scale(1); }
+}
+.animate-winner-flash {
+  animation: winnerFlash 700ms ease-out;
+}
+
+/* Trophy stamp slides up and fades in when a final-style result locks. */
+@keyframes winnerStamp {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.92); }
+  60%  { opacity: 1; transform: translateY(0)    scale(1.03); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.animate-winner-stamp {
+  animation: winnerStamp 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
