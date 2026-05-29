@@ -20,6 +20,7 @@ const PARTNERS: Partner[] = [
   { name: "Deportes Tifany", handle: "deportestifanys", logoSrc: "/assets/partners/tifany.png" },
   { name: "Pizzería El Punto", handle: "pizzeriaelpunto_sc", logoSrc: "/assets/partners/pizzeria-el-punto.png" },
   { name: "Gogoroyal", handle: "gogoroyalve", logoSrc: "/assets/partners/gogoroyal.jpg" },
+  { name: "Diario del Pueblo", handle: "diariodlpueblo", logoSrc: "/assets/partners/diario-del-pueblo.png" },
 ];
 
 const PHONE_ROW_ONE = PARTNERS.slice(0, 5);
