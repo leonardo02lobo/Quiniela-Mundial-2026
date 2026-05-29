@@ -19,11 +19,15 @@ import {
 } from "@dnd-kit/sortable";
 import { teamsByGroup } from "@/data/tournament";
 import { usePredictionsStore } from "@/lib/store/predictions";
+import { cn } from "@/lib/utils";
 import type { GroupId } from "@/types/domain";
+import type { GroupSelection } from "./groups-grid";
 import { SortableTeamRow } from "./sortable-team-row";
 
 interface GroupCardProps {
   groupId: GroupId;
+  selected: GroupSelection | null;
+  setSelected: (s: GroupSelection | null) => void;
 }
 
 /**
@@ -32,7 +36,7 @@ interface GroupCardProps {
  *   paper body         → 4 sortable team rows
  *   floodlight footer  → leg captions (advance / best-third / out)
  */
-export function GroupCard({ groupId }: GroupCardProps) {
+export function GroupCard({ groupId, selected, setSelected }: GroupCardProps) {
   const groups = useMemo(() => teamsByGroup(), []);
   const groupTeams = groups[groupId];
 
@@ -64,6 +68,15 @@ export function GroupCard({ groupId }: GroupCardProps) {
   );
 
   const isOrdered = !!stored && stored.length === 4;
+  const isActiveGroup = selected?.groupId === groupId;
+  const isDimmed = selected !== null && !isActiveGroup;
+
+  function commitOrder(teams: typeof orderedTeams) {
+    setGroupOrder(
+      groupId,
+      teams.map((t) => t.id),
+    );
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -71,25 +84,59 @@ export function GroupCard({ groupId }: GroupCardProps) {
       // Even on no-op, ensure the group is marked as ordered the first time
       // the user interacts. (Confirms current arrangement.)
       if (!isOrdered) {
-        setGroupOrder(
-          groupId,
-          orderedTeams.map((t) => t.id),
-        );
+        commitOrder(orderedTeams);
       }
       return;
     }
     const oldIndex = orderedTeams.findIndex((t) => t.id === active.id);
     const newIndex = orderedTeams.findIndex((t) => t.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
-    const next = arrayMove(orderedTeams, oldIndex, newIndex);
-    setGroupOrder(
-      groupId,
-      next.map((t) => t.id),
-    );
+    commitOrder(arrayMove(orderedTeams, oldIndex, newIndex));
   }
 
+  function handleTeamTap(teamId: string) {
+    // Nothing selected yet → pick this team.
+    if (!selected) {
+      setSelected({ groupId, teamId });
+      return;
+    }
+    // Tap the already-selected team → cancel selection.
+    if (selected.groupId === groupId && selected.teamId === teamId) {
+      setSelected(null);
+      return;
+    }
+    // Different group → move the selection there instead of swapping across groups.
+    if (selected.groupId !== groupId) {
+      setSelected({ groupId, teamId });
+      return;
+    }
+    // Same group, different team → swap positions and clear the selection.
+    const a = orderedTeams.findIndex((t) => t.id === selected.teamId);
+    const b = orderedTeams.findIndex((t) => t.id === teamId);
+    if (a < 0 || b < 0) {
+      setSelected(null);
+      return;
+    }
+    const next = orderedTeams.slice();
+    [next[a], next[b]] = [next[b], next[a]];
+    commitOrder(next);
+    setSelected(null);
+  }
+
+  const statusLabel = isActiveGroup
+    ? "Toca otro equipo"
+    : isOrdered
+      ? "Ordenado"
+      : "Arrastra o toca para ordenar";
+
   return (
-    <article className="border border-rule bg-paper">
+    <article
+      className={cn(
+        "border border-rule bg-paper transition-opacity duration-150",
+        isDimmed && "opacity-40",
+        isActiveGroup && "border-ink/40",
+      )}
+    >
       {/* Header band */}
       <header className="flex items-center justify-between border-b border-rule bg-floodlight px-3 py-2">
         <div className="flex items-baseline gap-2">
@@ -101,13 +148,16 @@ export function GroupCard({ groupId }: GroupCardProps) {
           </span>
         </div>
         <span
-          className={
-            isOrdered
-              ? "font-display text-[10px] font-semibold uppercase tracking-[0.18em] text-pitch"
-              : "font-display text-[10px] font-medium uppercase tracking-[0.18em] text-ink-faint"
-          }
+          className={cn(
+            "font-display text-[10px] uppercase",
+            isActiveGroup
+              ? "font-semibold tracking-[0.18em] text-pitch"
+              : isOrdered
+                ? "font-semibold tracking-[0.18em] text-pitch"
+                : "font-medium tracking-[0.18em] text-ink-faint",
+          )}
         >
-          {isOrdered ? "Ordenado" : "Arrastra para ordenar"}
+          {statusLabel}
         </span>
       </header>
 
@@ -128,6 +178,9 @@ export function GroupCard({ groupId }: GroupCardProps) {
                 key={team.id}
                 team={team}
                 position={idx + 1}
+                isSelected={isActiveGroup && selected?.teamId === team.id}
+                isSwapCandidate={isActiveGroup && selected?.teamId !== team.id}
+                onTap={() => handleTeamTap(team.id)}
               />
             ))}
           </ol>

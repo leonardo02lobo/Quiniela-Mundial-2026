@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
-import { groupIds } from "@/data/tournament";
 import { ContinueCta } from "@/components/features/group-stage/continue-cta";
-import { GroupCard } from "@/components/features/group-stage/group-card";
+import { GroupsGrid } from "@/components/features/group-stage/groups-grid";
 import { ProgressIndicator } from "@/components/features/group-stage/progress-indicator";
 
 export default async function GroupsPredictionPage() {
@@ -34,12 +33,9 @@ export default async function GroupsPredictionPage() {
         <ProgressIndicator />
       </div>
 
-      {/* 12 group cards. Each card owns its own DndContext — drag is internal. */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {groupIds.map((id) => (
-          <GroupCard key={id} groupId={id} />
-        ))}
-      </div>
+      {/* 12 group cards. Each card owns its own DndContext — drag is internal.
+          Shared tap-to-swap selection lives in GroupsGrid. */}
+      <GroupsGrid />
 
       {/* Continue CTA */}
       <div className="mt-8">

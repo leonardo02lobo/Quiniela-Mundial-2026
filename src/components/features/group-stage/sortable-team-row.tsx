@@ -14,6 +14,12 @@ export interface SortableTeamRowProps {
     group: GroupId;
   };
   position: number; // 1..4
+  /** This row is the team currently selected for tap-to-swap. */
+  isSelected?: boolean;
+  /** A team in the same group is selected; tapping this row will swap with it. */
+  isSwapCandidate?: boolean;
+  /** Fires on a plain tap/click that did not trigger a drag. */
+  onTap?: () => void;
 }
 
 type Status = "advance" | "candidate" | "eliminated";
@@ -40,7 +46,13 @@ const statusLabel: Record<Status, string> = {
  * plus a tiny uppercase label on the trailing side. Color is reserved for
  * status only — team identity stays monochrome (flag + code + name).
  */
-export function SortableTeamRow({ team, position }: SortableTeamRowProps) {
+export function SortableTeamRow({
+  team,
+  position,
+  isSelected = false,
+  isSwapCandidate = false,
+  onTap,
+}: SortableTeamRowProps) {
   const {
     attributes,
     listeners,
@@ -62,17 +74,34 @@ export function SortableTeamRow({ team, position }: SortableTeamRowProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group/row relative flex items-stretch border border-rule bg-paper",
+        "group/row relative flex items-stretch border bg-paper",
         "transition-colors",
+        // Default border; selection/swap candidate states override.
+        !isSelected && !isSwapCandidate && "border-rule",
+        // Selected row: solid ink ring + paper-hover background.
+        isSelected && "z-10 border-ink bg-paper-hover ring-1 ring-ink",
+        // Same group, not selected: nudge the border to signal "tap to swap".
+        isSwapCandidate && !isSelected && "border-ink/30 bg-paper-hover/60",
         // While dragging: lift visually via background + stronger border.
-        isDragging
-          ? "z-10 border-ink/40 bg-paper-hover"
-          : "hover:bg-paper-hover hover:border-ink/20",
+        isDragging && "z-10 border-ink/40 bg-paper-hover",
+        // Hover only when neither selected nor a swap candidate (avoid clobbering).
+        !isSelected &&
+          !isSwapCandidate &&
+          !isDragging &&
+          "hover:bg-paper-hover hover:border-ink/20",
       )}
       {...attributes}
       {...listeners}
+      onClick={(event) => {
+        // dnd-kit emits a synthetic click on pointerup when no drag occurred.
+        // Guard against firing during a drag, just in case.
+        if (isDragging) return;
+        event.stopPropagation();
+        onTap?.();
+      }}
       // dnd-kit attaches role="button" + tabIndex; keep it grabbable.
       data-position={position}
+      data-selected={isSelected || undefined}
     >
       {/* Leading status bar — 2px chalky strip in the status color */}
       <span
