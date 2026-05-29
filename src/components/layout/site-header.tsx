@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PartnersStrip } from "@/components/layout/partners-strip";
 import { TileBand } from "@/components/layout/tile-band";
 
 const navItems = [
@@ -74,6 +75,7 @@ export async function SiteHeader() {
           )}
         </div>
       </div>
+      <PartnersStrip />
     </header>
   );
 }

@@ -1,5 +1,6 @@
 import { signIn, auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { PartnersStrip } from "@/components/layout/partners-strip";
 import { TileBand } from "@/components/layout/tile-band";
 
 export default async function SignInPage({
@@ -56,6 +57,7 @@ export default async function SignInPage({
             ediciones después del pitazo inicial.
           </p>
         </div>
+        <PartnersStrip withLabel />
         <TileBand className="h-3" />
       </div>
     </section>
