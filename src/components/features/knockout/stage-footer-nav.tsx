@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { stages, type Stage } from "@/data/bracket";
 import { cn } from "@/lib/utils";
 
@@ -8,10 +9,14 @@ interface StageFooterNavProps {
   onSelect: (stage: Stage) => void;
 }
 
+const PREV_STEP_HREF = "/predictions/best-thirds";
+const PREV_STEP_LABEL = "Mejores Terceros";
+
 /**
  * Bottom-of-page navigation for the knockout stages.
- * - "Go back" hidden on R32 (the first stage).
- * - "Continue" hides on FINAL (the last stage).
+ * - On R32 (the first bracket stage) the back slot falls through to the
+ *   previous flow step (best-thirds) instead of disappearing.
+ * - "Continue" hides on FINAL (the last stage); the Save button takes over.
  * - Wraps to top on stage change so the user lands at the new stage header.
  */
 export function StageFooterNav({ active, onSelect }: StageFooterNavProps) {
@@ -25,6 +30,12 @@ export function StageFooterNav({ active, onSelect }: StageFooterNavProps) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
+
+  const backClassName = cn(
+    "border-2 border-ink bg-paper px-5 py-2.5 text-center",
+    "font-display text-xs font-bold uppercase tracking-[0.16em] text-ink",
+    "transition-colors hover:bg-paper-hover",
+  );
 
   return (
     <nav className="mt-8 flex flex-col items-stretch gap-3 border border-rule bg-paper px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -42,19 +53,14 @@ export function StageFooterNav({ active, onSelect }: StageFooterNavProps) {
           <button
             type="button"
             onClick={() => go(prev.id)}
-            className={cn(
-              "border-2 border-ink bg-paper px-5 py-2.5 text-center",
-              "font-display text-xs font-bold uppercase tracking-[0.16em] text-ink",
-              "transition-colors hover:bg-paper-hover",
-            )}
+            className={backClassName}
           >
             ← {prev.label}
           </button>
         ) : (
-          <span
-            aria-hidden
-            className="hidden sm:block"
-          />
+          <Link href={PREV_STEP_HREF} className={backClassName}>
+            ← {PREV_STEP_LABEL}
+          </Link>
         )}
 
         {next && (
