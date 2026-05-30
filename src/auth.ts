@@ -41,7 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user && token.id) session.user.id = String(token.id);
-      if (session.user && token.backendToken) session.user.backendToken = token.backendToken;
+      if (session.user && token.backendToken) session.user.backendToken = String(token.backendToken);
       return session;
     },
     authorized({ auth: session, request: { nextUrl } }) {

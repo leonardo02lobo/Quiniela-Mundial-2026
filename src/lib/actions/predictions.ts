@@ -1,8 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { revalidateTag } from "next/cache";
-import { cacheTags } from "@/lib/api/endpoints";
+import { revalidatePath } from "next/cache";
 
 const API_URL = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
 
@@ -27,7 +26,7 @@ async function fetchMatchIdMap(): Promise<Map<number, string>> {
     stages.map(async (stage) => {
       try {
         const res = await fetch(`${API_URL}/matches?stage=${stage}`, {
-          next: { revalidate: 3600, tags: [cacheTags.matches] },
+          next: { revalidate: 3600, tags: ["matches"] },
         });
         if (!res.ok) return;
         const matches = (await res.json()) as Array<{ id: string; fifaNumber: number | null }>;
@@ -90,7 +89,7 @@ export async function submitKnockoutPredictions(picks: PickInput[]): Promise<Sub
     }
   });
 
-  if (submitted > 0) revalidateTag(cacheTags.predictions);
+  if (submitted > 0) revalidatePath("/predictions/knockout");
 
   return { ok: errors.length === 0, submitted, errors };
 }
