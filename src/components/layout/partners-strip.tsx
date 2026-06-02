@@ -101,7 +101,7 @@ function PartnerLink({ partner, compact = false }: { partner: Partner; compact?:
         alt={`Logo de ${partner.name}`}
         width={160}
         height={64}
-        className={cn("w-auto object-contain", compact ? "h-7" : "h-9 sm:h-11")}
+        className={cn("w-auto object-contain", compact ? "h-7" : "h-7 sm:h-11")}
       />
     </a>
   );
