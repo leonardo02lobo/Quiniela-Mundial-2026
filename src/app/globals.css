@@ -147,6 +147,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Safety net: never let a stray element produce a horizontal scrollbar
+       on mobile. `clip` (unlike `hidden`) doesn't establish a scroll container,
+       so sticky/fixed positioning keeps working. */
+    overflow-x: clip;
   }
   html {
     @apply font-sans;

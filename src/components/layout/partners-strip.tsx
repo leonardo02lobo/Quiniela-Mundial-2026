@@ -30,14 +30,17 @@ interface PartnersStripProps {
   className?: string;
   /** Show the "Patrocinadores" caption above the logos. */
   withLabel?: boolean;
+  /** Force the two-row stacked layout regardless of breakpoint. For narrow containers. */
+  stacked?: boolean;
 }
 
 /**
  * Partner logo strip. Each logo links to the partner's Instagram in a
- * new tab. On phones the row breaks into two centered rows (5 + 4) so
+ * new tab. On phones the row breaks into two centered rows (5 + 5) so
  * logos stay legible; on sm+ everything sits on a single centered row.
+ * Pass `stacked` to keep the two-row layout even on sm+ (for narrow cards).
  */
-export function PartnersStrip({ className, withLabel = false }: PartnersStripProps) {
+export function PartnersStrip({ className, withLabel = false, stacked = false }: PartnersStripProps) {
   return (
     <aside
       aria-label="Patrocinadores"
@@ -50,38 +53,40 @@ export function PartnersStrip({ className, withLabel = false }: PartnersStripPro
           </span>
         )}
 
-        {/* Phone: two centered rows (5 then 4) */}
-        <div className="flex w-full flex-col items-center gap-3 sm:hidden">
-          <PartnerRow partners={PHONE_ROW_ONE} />
-          <PartnerRow partners={PHONE_ROW_TWO} />
+        {/* Two centered rows (5 + 5) — always on phones, also on sm+ when stacked */}
+        <div className={cn("flex w-full flex-col items-center gap-3", !stacked && "sm:hidden")}>
+          <PartnerRow partners={PHONE_ROW_ONE} compact={stacked} />
+          <PartnerRow partners={PHONE_ROW_TWO} compact={stacked} />
         </div>
 
-        {/* sm+: single centered row */}
-        <ul className="hidden w-full items-center justify-center gap-6 sm:flex">
-          {PARTNERS.map((p) => (
-            <li key={p.handle} className="shrink-0">
-              <PartnerLink partner={p} />
-            </li>
-          ))}
-        </ul>
+        {/* sm+: single centered row (suppressed when stacked) */}
+        {!stacked && (
+          <ul className="hidden w-full items-center justify-center gap-6 sm:flex">
+            {PARTNERS.map((p) => (
+              <li key={p.handle} className="shrink-0">
+                <PartnerLink partner={p} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </aside>
   );
 }
 
-function PartnerRow({ partners }: { partners: Partner[] }) {
+function PartnerRow({ partners, compact = false }: { partners: Partner[]; compact?: boolean }) {
   return (
     <ul className="flex items-center justify-center gap-4">
       {partners.map((p) => (
         <li key={p.handle} className="shrink-0">
-          <PartnerLink partner={p} />
+          <PartnerLink partner={p} compact={compact} />
         </li>
       ))}
     </ul>
   );
 }
 
-function PartnerLink({ partner }: { partner: Partner }) {
+function PartnerLink({ partner, compact = false }: { partner: Partner; compact?: boolean }) {
   return (
     <a
       href={`https://instagram.com/${partner.handle}`}
@@ -96,7 +101,7 @@ function PartnerLink({ partner }: { partner: Partner }) {
         alt={`Logo de ${partner.name}`}
         width={160}
         height={64}
-        className="h-9 w-auto object-contain sm:h-11"
+        className={cn("w-auto object-contain", compact ? "h-7" : "h-7 sm:h-11")}
       />
     </a>
   );

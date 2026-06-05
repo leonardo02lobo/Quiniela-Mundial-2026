@@ -57,7 +57,7 @@ export default async function SignInPage({
             ediciones después del pitazo inicial.
           </p>
         </div>
-        <PartnersStrip withLabel />
+        <PartnersStrip withLabel stacked />
         <TileBand className="h-3" />
       </div>
     </section>
