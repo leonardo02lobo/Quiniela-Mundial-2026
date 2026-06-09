@@ -2,6 +2,7 @@ import { signIn, auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { PartnersStrip } from "@/components/layout/partners-strip";
 import { TileBand } from "@/components/layout/tile-band";
+import { PrizeList } from "@/components/features/prizes/prize-list";
 
 export default async function SignInPage({
   searchParams,
@@ -15,7 +16,7 @@ export default async function SignInPage({
   const redirectTo = callbackUrl ?? "/predictions/groups";
 
   return (
-    <section className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 py-16">
+    <section className="mx-auto flex max-w-md flex-col items-center gap-6 px-6 py-12 sm:py-16">
       <div className="w-full border border-ink bg-paper">
         <TileBand className="h-3" />
         <div className="flex items-center justify-between border-b border-rule px-6 py-3">
@@ -60,6 +61,8 @@ export default async function SignInPage({
         <PartnersStrip withLabel stacked />
         <TileBand className="h-3" />
       </div>
+
+      <PrizeList />
     </section>
   );
 }
